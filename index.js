@@ -16,6 +16,11 @@ async function startApolloServer() {
   server.applyMiddleware({ app });
 }
 
+app.get('/', (req, res) => {
+     res.redirect('/graphql');
+  });
+  
+
 startApolloServer().then(() => {
   app.listen(port, () =>
     console.log(`🚀 Server ready at http://localhost:${port}${server.graphqlPath}`)
