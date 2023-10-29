@@ -1,26 +1,50 @@
-// Aquí simularé una función de búsqueda, pero deberías reemplazarla con la lógica real de búsqueda.
-const searchFunction = async (query) => {
-    // Lógica de búsqueda real, por ejemplo, buscar en una base de datos o realizar llamadas a una API externa.
-    // Aquí, retornaré resultados simulados.
-    const results = [
-      { id: '1', title: 'Ejemplo 1' },
-      { id: '2', title: 'Ejemplo 2' }
-      // Agrega más resultados según tu lógica de búsqueda.
-    ];
-  
-    // Simulación de demora
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-  
-    return results.filter(result => result.title.toLowerCase().includes(query.toLowerCase()));
-  };
-  
-  const resolvers = {
-    Query: {
-      search: async (_, { query }) => {
-        return await searchFunction(query);
+const fetch = require('node-fetch');
+
+async function callInventoryService(query) {
+  try {
+    const inventoryResponse = await fetch('https://catalogmicroservicegraphql.onrender.com/graphql', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        query: `
+          query getProductNameAndPrice($productName: String!) {
+            getProductNameAndPriceWithId(productId: $productName) {
+              id
+              name
+              price
+            }
+          }
+        `,
+        variables: {
+          productName: query // 'query' contiene el nombre del producto a buscar
+        }
+      })
+    });
+
+    if (inventoryResponse.ok) {
+      const data = await inventoryResponse.json();
+      return data;
+    } else {
+      throw new Error('Error al llamar al servicio de inventario');
+    }
+  } catch (error) {
+    throw new Error('Error al comunicarse con el servicio de inventario');
+  }
+}
+
+const resolvers = {
+  Query: {
+    search: async (_, { query }) => {
+      try {
+        const products = await callInventoryService(query);
+        return products;
+      } catch (error) {
+        throw new Error(error.message);
       }
     }
-  };
-  
-  module.exports = resolvers;
-  
+  }
+};
+
+module.exports = resolvers;
