@@ -25,7 +25,7 @@ async function callInventoryService(query) {
 
     if (inventoryResponse.ok) {
       const data = await inventoryResponse.json();
-      return data;
+      return data.data.getProductNameAndPriceWithId; // Retorna la información obtenida del inventario
     } else {
       throw new Error('Error al llamar al servicio de inventario');
     }
