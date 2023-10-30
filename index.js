@@ -9,6 +9,7 @@ const port = process.env.PORT || 3000;
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  introspection: true,
 });
 
 async function startApolloServer() {
