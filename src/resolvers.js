@@ -5,7 +5,9 @@ const supabase = createClient('https://mxkixfjeniosxqwmajic.supabase.co', 'eyJhb
 const resolvers = {
   Query: {
     products: async () => {
-      const { data, error } = await supabase.from('productos1').select('*');
+      const { data, error } = await supabase
+        .from('productos1')
+        .select('id, nombre, descripcion, precio, categoria, disponible'); // Añade los campos necesarios aquí
 
       if (error) {
         throw new Error('No se pueden obtener los productos');
