@@ -1,55 +1,19 @@
-const fetch = require('node-fetch');
+const { createClient } = require('@supabase/supabase-js');
 
-async function getProductIDsByQuery(query) {
-  const inventoryURL = 'https://catalogmicroservicegraphql.onrender.com/graphql';
-
-  try {
-    const inventoryResponse = await fetch(inventoryURL, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        query: `
-          query GetProductIDs($productName: String!) {
-            search(query: $productName) {
-              id
-            }
-          }
-        `,
-        variables: {
-          productName: query
-        }
-      })
-    });
-
-    if (!inventoryResponse.ok) {
-      throw new Error('Error al llamar al servicio de inventario');
-    }
-
-    const data = await inventoryResponse.json();
-
-    if (data.errors) {
-      throw new Error('Error en la respuesta del servicio de inventario');
-    }
-
-    return data.data.search.map(product => product.id);
-  } catch (error) {
-    throw new Error('Error al comunicarse con el servicio de inventario: ' + error.message);
-  }
-}
-
+// Configura tu cliente de Supabase
+const supabase = createClient('https://mxkixfjeniosxqwmajic.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im14a2l4Zmplbmlvc3hxd21hamljIiwicm9sZSI6ImFub24iLCJpYXQiOjE2OTg3ODc4OTgsImV4cCI6MjAxNDM2Mzg5OH0.rqk6TQ0ZfcR9SaQrJnadSraBdL3zvE8WyWEN_ms0tG4');
 const resolvers = {
   Query: {
-    search: async (_, { query }) => {
-      try {
-        const productIDs = await getProductIDsByQuery(query);
-        return productIDs;
-      } catch (error) {
-        throw new Error(error.message);
+    products: async () => {
+      const { data, error } = await supabase.from('productos1').select('*');
+
+      if (error) {
+        throw new Error('No se pueden obtener los productos');
       }
-    }
-  }
+
+      return data;
+    },
+  },
 };
 
 module.exports = resolvers;
