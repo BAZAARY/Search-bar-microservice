@@ -2,11 +2,12 @@ const { gql } = require('apollo-server');
 
 const typeDefs = gql`
 type Product {
-  id: Int!
-  nombre: String
+  id: ID!
+  nombre: String!
   descripcion: String
-  precio: Float
-  # Otros campos de producto
+  precio: Float!
+  categoria: String
+
 }
 
 type Query {
