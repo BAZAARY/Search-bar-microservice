@@ -7,7 +7,7 @@ const resolvers = {
     products: async () => {
       const { data, error } = await supabase
         .from('productos1')
-        .select('id, nombre, descripcion, precio, categoria, disponible'); // Añade los campos necesarios aquí
+        .select('id, name, price'); // Añade los campos necesarios aquí
 
       if (error) {
         throw new Error('No se pueden obtener los productos');
